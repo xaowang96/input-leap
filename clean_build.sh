@@ -18,7 +18,16 @@ B_CMAKE_FLAGS="-DCMAKE_BUILD_TYPE=${B_BUILD_TYPE} ${B_CMAKE_FLAGS:-}"
 if [ "$(uname)" = "Darwin" ]; then
     # macOS needs a little help, so we source this environment script to fix paths.
     [ -e ./macos_environment.sh ] && . ./macos_environment.sh
-    B_CMAKE_FLAGS="${B_CMAKE_FLAGS} -DCMAKE_OSX_SYSROOT=$(xcode-select --print-path)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9"
+    if [ "${CMAKE_OSX_SYSROOT}" != "" ]; then
+        CMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}
+        CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+        QT_DEFAULT_MAJOR_VERSION=${QT_DEFAULT_MAJOR_VERSION}
+    else
+        CMAKE_OSX_SYSROOT=$(xcode-select --print-path)/SDKs/MacOSX.sdk
+        CMAKE_OSX_DEPLOYMENT_TARGET=14.4
+        QT_DEFAULT_MAJOR_VERSION=5
+    fi
+    B_CMAKE_FLAGS="${B_CMAKE_FLAGS} -DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT} -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} -DQT_DEFAULT_MAJOR_VERSION=${QT_DEFAULT_MAJOR_VERSION}"
 fi
 
 # Prefer ninja if available
